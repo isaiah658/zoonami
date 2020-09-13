@@ -28,17 +28,17 @@ Bugs and ideas can be submitted here, or [here](https://github.com/isaiah658/zoo
 * [GitHub](http://github.com/isaiah658/zoonami/)
 
 ## Licensing
-License Links:
+License Links:  
 (CC0) https://creativecommons.org/publicdomain/zero/1.0/
 
-License of Media:
+License of Media:  
 Monster RPG 2 (https://opengameart.org/content/42-monster-rpg-2-music-tracks) (CC0)
 	sounds/zoonami_battle.ogg (Edited to seemlessly loop by isaiah658)
 
 isaiah658 (CC0)
 	All sounds and textures not listed above were created by isaiah658 and are licensed as CC0.
 
-License of Code:
+License of Code:  
 Copyright 2020 isaiah658
 
 MIT License
