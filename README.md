@@ -22,7 +22,7 @@ formspec.
 
 ## Requirements
 This mod requires Minetest 5.4.0 or later.  
-It also requires fsc and mobs redo mods. The sfinv mod is currently optional, but it may become required in the future.
+It also requires [fsc](https://forum.minetest.net/viewtopic.php?t=19203) and [mobs redo](https://forum.minetest.net/viewtopic.php?t=9917) mods. The sfinv mod is currently optional, but it may become required in the future.
 
 ## Main Goals
 - [ ] Ensure all formspecs are secure and cannot be used to crash a server
