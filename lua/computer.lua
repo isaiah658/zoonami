@@ -4,7 +4,7 @@ local computer = {}
 
 -- Determines what move the computer will choose
 function computer.choose_move(name, player, enemy)
-	local moves = dofile(minetest.get_modpath("zoonami") .. "/move_stats.lua")
+	local moves = dofile(minetest.get_modpath("zoonami") .. "/lua/move_stats.lua")
 	local max_move_damage = 0
 	local selected_move = nil
 	
