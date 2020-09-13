@@ -1,7 +1,7 @@
 -- Spawns the monster mobs via mobs redo mod and also gives new players a starter monster
 
 -- Import monster stats
-local monster_stats = dofile(minetest.get_modpath("zoonami") .. "lua/monster_stats.lua")
+local monster_stats = dofile(minetest.get_modpath("zoonami") .. "/lua/monster_stats.lua")
 
 -- Temporary way to give players some inital monsters
 minetest.register_on_newplayer(function(player)
