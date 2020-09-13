@@ -3,14 +3,26 @@ A mod for Minetest that allows you to collect and train monsters that can be use
 
 Version 0.1.0
 
+## Warning
+This mod is incomplete, has bugs, and can cause server crashes. Only use it for testing 
+and experimenting.
+
 ## Description
 This mod adds monsters that you can collect, train, and use in battles. The battles
 use a formspec interface that looks and feels similar to a true 2D RPG. It takes 
 advantage of the latest additions in Minetest 5.4.0 to control font sizes, styling, 
 and animated images in the battle formspec.
 
+New players that join the world will be given a few monsters for testing purposes.
+At some point, a proper way for choosing a starter monster will be made. Monsters 
+can be found roaming the world or spawned in via creative mode spawn eggs.
+Right clicking on a monster will initate a battle. If you need to immediately exit
+a battle, you can press ESC or whatever key you would normally use to exit a
+formspec.
+
 ## Requirements
-This mod requires Minetest 5.4.0 or later. It also requires fsc and mobs redo mods. The sfinv mod is currently optional, but it may become required in the future.
+This mod requires Minetest 5.4.0 or later.  
+It also requires fsc and mobs redo mods. The sfinv mod is currently optional, but it may become required in the future.
 
 ## Main Goals
 - [ ] Ensure all formspecs are secure and cannot be used to crash a server
