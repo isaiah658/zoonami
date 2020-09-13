@@ -5,7 +5,7 @@ Version 0.1.0
 
 ## Warning
 This mod is incomplete, has bugs, and can cause server crashes. Only use it for testing 
-and experimenting.
+and experimenting. There is not a lot of content to explore and enjoy at this time.
 
 ## Description
 This mod adds monsters that you can collect, train, and use in battles. The battles
