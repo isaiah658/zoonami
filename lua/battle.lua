@@ -2,9 +2,9 @@
 
 -- Import functions from other files
 local battle = {}
-local monster_stats = dofile(minetest.get_modpath("zoonami") .. "lua/monster_stats.lua")
-local move_stats = dofile(minetest.get_modpath("zoonami") .. "lua/move_stats.lua")
-local computer = dofile(minetest.get_modpath("zoonami") .. "lua/computer.lua")
+local monster_stats = dofile(minetest.get_modpath("zoonami") .. "/lua/monster_stats.lua")
+local move_stats = dofile(minetest.get_modpath("zoonami") .. "/lua/move_stats.lua")
+local computer = dofile(minetest.get_modpath("zoonami") .. "/lua/computer.lua")
 
 -- Controls formspec zoom amount
 local function z(number)
