@@ -33,10 +33,10 @@ It also requires [fsc](https://forum.minetest.net/viewtopic.php?t=19203) and [mo
 - [ ] Add details to monster spawning conditions (time of day, biomes, etc)
 
 ## Bug reports and ideas
-Bugs and ideas can be submitted here, or [here](https://github.com/isaiah658/zoonami/issues/new).
+Bugs and ideas can be submitted [here](https://forum.minetest.net/viewtopic.php?f=9&t=25356&sid=1ffebc6a6c8b35653d939a376a067a7f), or [here](https://github.com/isaiah658/zoonami/issues/new).
 
 ## Links
-* [Minetest Forums]()
+* [Minetest Forums](https://forum.minetest.net/viewtopic.php?f=9&t=25356&sid=1ffebc6a6c8b35653d939a376a067a7f)
 * [GitHub](http://github.com/isaiah658/zoonami/)
 
 ## Licensing
