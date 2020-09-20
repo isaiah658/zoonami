@@ -139,7 +139,8 @@ function battle.update(mt_player_name, fields, battle_context)
 		-- Start the battle sequence if the player has enough energy to use the move otherwise inform player of low energy
 		if move_stats[player_move_name].energy <= player.energy then
 			local player_move = move_stats[player_move_name]
-			local enemy_move = move_stats[computer.choose_move(mt_player_name, player, enemy)]
+			local enemy_move = computer.choose_move(mt_player_name, player, enemy)
+			enemy_move = move_stats[enemy_move] or enemy_move
 			battle.sequence(mt_player_name, player, enemy, menu, textbox, animation, battle_context, player_move, enemy_move)
 		else
 			textbox = fs.dialogue("Not enough energy to use that move.")
@@ -164,7 +165,8 @@ function battle.update(mt_player_name, fields, battle_context)
 		end
 		if battle_context.player_monsters["monster_"..player_new_monster].health > 0 then
 			local player_move = player_new_monster
-			local enemy_move = move_stats[computer.choose_move(mt_player_name, player, enemy)]
+			local enemy_move = computer.choose_move(mt_player_name, player, enemy)
+			enemy_move = move_stats[enemy_move] or enemy_move
 			battle.sequence(mt_player_name, player, enemy, menu, textbox, animation, battle_context, player_move, enemy_move)
 		else
 			textbox = fs.dialogue("Monster is too tired to battle.")
