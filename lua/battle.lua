@@ -106,7 +106,7 @@ function battle.update(mt_player_name, fields, battle_context)
 	
 	if fields.battle then
 		battle_context.menu = battle_context.menu..
-			fs.image_button(4.5, 4.5, 1.5, 0.5, 2, "main_battle_context.menu", "Back")
+			fs.image_button(4.5, 4.5, 1.5, 0.5, 2, "main_menu", "Back")
 		for i, v in ipairs (player.moves) do
 			battle_context.menu = battle_context.menu..
 				fs.image_button((i-1)*(1.5), 5, 1.5, 1, 1, "move_"..i, move_stats[v].name)..
@@ -116,7 +116,7 @@ function battle.update(mt_player_name, fields, battle_context)
 		local meta = mt_player_obj:get_meta()
 		battle_context.menu = battle_context.menu..
 			fs.image(0, 0, 6, 6, "zoonami_battle_party_background.png")..
-			fs.image_button(4.5, 5.5, 1.5, 0.5, 2, "main_battle_context.menu", "Back")
+			fs.image_button(4.5, 5.5, 1.5, 0.5, 2, "main_menu", "Back")
 		for i = 1, 5 do
 			if battle_context.player_monsters["monster_"..i] then
 				local monster = battle_context.player_monsters["monster_"..i]
@@ -185,7 +185,7 @@ function battle.update(mt_player_name, fields, battle_context)
 	end
 	
 	-- Redraw formspec except when battle sequence starts
-	if next(fields) == nil or fields.battle or fields.party or fields.items or fields.main_battle_context.menu then
+	if next(fields) == nil or fields.battle or fields.party or fields.items or fields.main_menu then
 		battle.redraw_formspec(mt_player_name, player, enemy, battle_context)
 	end
 end
