@@ -105,89 +105,123 @@ function battle.update(mt_player_name, fields, battle_context)
 	end
 	
 	if fields.battle then
-		battle_context.menu = battle_context.menu..
-			fs.image_button(4.5, 4.5, 1.5, 0.5, 2, "main_menu", "Back")
-		for i, v in ipairs (player.moves) do
-			battle_context.menu = battle_context.menu..
-				fs.image_button((i-1)*(1.5), 5, 1.5, 1, 1, "move_"..i, move_stats[v].name)..
-				fs.tooltip("move_"..i, "Attack: "..move_stats[v].power * (100).."%\nEnergy: "..move_stats[v].energy, "#ffffff", "#000000")
-		end
+		battle.fields_battle(player, battle_context)
 	elseif fields.party then
-		local meta = mt_player_obj:get_meta()
-		battle_context.menu = battle_context.menu..
-			fs.image(0, 0, 6, 6, "zoonami_battle_party_background.png")..
-			fs.image_button(4.5, 5.5, 1.5, 0.5, 2, "main_menu", "Back")
-		for i = 1, 5 do
-			if battle_context.player_monsters["monster_"..i] then
-				local monster = battle_context.player_monsters["monster_"..i]
-				battle_context.menu = battle_context.menu..
-					fs.box(0.25, 0.1+i-0.9, 0.7, 0.7, monster_stats[monster.asset_name].color)..
-					fs.image_button(0, 0.1+i-1, 6, 0.92, 3, "monster_"..i, monster.name.."\nH:"..monster.health.."/"..monster.max_health.."  E:"..monster.energy.."/"..monster.max_energy)
-			end
-		end
+		battle.fields_party(battle_context)
 	elseif fields.items then
-		battle_context.textbox = fs.dialogue("This feature is not implemented yet.")
-		minetest.after(3, battle.update, mt_player_name, false, battle_context)
+		battle.fields_items(mt_player_name, battle_context)
 	elseif fields.move_1 or fields.move_2 or fields.move_3 or fields.move_4 then
-		battle_context.locked = true
-		local player_move_name = nil
-		for i = 1, 4 do
-			if fields["move_"..i] then
-				player_move_name = player.moves[i]
-			end
-		end
-		-- Start the battle sequence if the player has enough energy to use the move otherwise inform player of low energy
-		if move_stats[player_move_name].energy <= player.energy then
-			local player_move = move_stats[player_move_name]
-			local enemy_move = computer.choose_move(mt_player_name, player, enemy)
-			enemy_move = move_stats[enemy_move] or enemy_move
-			battle.sequence(mt_player_name, player, enemy, battle_context, player_move, enemy_move)
-		else
-			battle_context.textbox = fs.dialogue("Not enough energy to use that move.")
-			battle.redraw_formspec(mt_player_name, player, enemy, battle_context)
-			minetest.after(3, function()
-				local new_fields = {battle = true}
-				battle_context.locked = false
-				battle.update(mt_player_name, new_fields, battle_context)
-			end)
-		end
+		battle.fields_move(mt_player_name, player, enemy, fields, battle_context)
 	elseif fields.move_skip then
-		local player_move = "skip"
-		local enemy_move = move_stats[computer.choose_move(mt_player_name, player, enemy)]
-		battle.sequence(mt_player_name, player, enemy, battle_context, player_move, enemy_move)
+		battle.fields_move_skip(mt_player_name, player, enemy, battle_context)
 	elseif fields.monster_1 or fields.monster_2 or fields.monster_3 or fields.monster_4 or fields.monster_5 then
-		battle_context.locked = true
-		local player_new_monster = 1
-		for i = 1, 5 do
-			if fields["monster_"..i] then
-				player_new_monster = i
-			end
-		end
-		if battle_context.player_monsters["monster_"..player_new_monster].health > 0 then
-			local player_move = player_new_monster
-			local enemy_move = computer.choose_move(mt_player_name, player, enemy)
-			enemy_move = move_stats[enemy_move] or enemy_move
-			battle.sequence(mt_player_name, player, enemy, battle_context, player_move, enemy_move)
-		else
-			battle_context.textbox = fs.dialogue("Monster is too tired to battle.")
-			battle.redraw_formspec(mt_player_name, player, enemy, battle_context)
-			minetest.after(3, function()
-				local new_fields = {party = true}
-				battle_context.locked = false
-				battle.update(mt_player_name, new_fields, battle_context)
-			end)
-		end
+		battle.fields_monster(mt_player_name, player, enemy, fields, battle_context)
 	else
-		battle_context.menu = fs.image_button(0, 5, 1.5, 1, 1, "battle", "Battle")..
-			fs.image_button(1.5, 5, 1.51, 1, 1, "party", "Party")..
-			fs.image_button(3, 5, 1.5, 1, 1, "items", "Items")..
-			fs.image_button(4.5, 5, 1.51, 1, 1, "move_skip", "Skip")
+		battle.fields_main_menu(battle_context)
 	end
 	
 	-- Redraw formspec except when battle sequence starts
 	if next(fields) == nil or fields.battle or fields.party or fields.items or fields.main_menu then
 		battle.redraw_formspec(mt_player_name, player, enemy, battle_context)
 	end
+end
+
+-- Shows the battle menu where the player can select a move
+function battle.fields_battle(player, battle_context)
+	battle_context.menu = battle_context.menu..
+		fs.image_button(4.5, 4.5, 1.5, 0.5, 2, "main_menu", "Back")
+	for i, v in ipairs (player.moves) do
+		battle_context.menu = battle_context.menu..
+			fs.image_button((i-1)*(1.5), 5, 1.5, 1, 1, "move_"..i, move_stats[v].name)..
+			fs.tooltip("move_"..i, "Attack: "..move_stats[v].power * (100).."%\nEnergy: "..move_stats[v].energy, "#ffffff", "#000000")
+	end
+end
+
+-- Shows the party menu where the player can select a monster
+function battle.fields_party(battle_context)
+	battle_context.menu = battle_context.menu..
+		fs.image(0, 0, 6, 6, "zoonami_battle_party_background.png")..
+		fs.image_button(4.5, 5.5, 1.5, 0.5, 2, "main_menu", "Back")
+	for i = 1, 5 do
+		if battle_context.player_monsters["monster_"..i] then
+			local monster = battle_context.player_monsters["monster_"..i]
+			battle_context.menu = battle_context.menu..
+				fs.box(0.25, 0.1+i-0.9, 0.7, 0.7, monster_stats[monster.asset_name].color)..
+				fs.image_button(0, 0.1+i-1, 6, 0.92, 3, "monster_"..i, monster.name.."\nH:"..monster.health.."/"..monster.max_health.."  E:"..monster.energy.."/"..monster.max_energy)
+		end
+	end
+end
+
+-- Shows the items menu where the player can select an item
+function battle.fields_items(mt_player_name, battle_context)
+	battle_context.textbox = fs.dialogue("This feature is not implemented yet.")
+	minetest.after(3, battle.update, mt_player_name, false, battle_context)
+end
+
+-- Called when a player selects a move and checks if it can be used
+function battle.fields_move(mt_player_name, player, enemy, fields, battle_context)
+	battle_context.locked = true
+	local player_move_name = nil
+	for i = 1, 4 do
+		if fields["move_"..i] then
+			player_move_name = player.moves[i]
+		end
+	end
+	if move_stats[player_move_name].energy <= player.energy then
+		local player_move = move_stats[player_move_name]
+		local enemy_move = computer.choose_move(mt_player_name, player, enemy)
+		enemy_move = move_stats[enemy_move] or enemy_move
+		battle.sequence(mt_player_name, player, enemy, battle_context, player_move, enemy_move)
+	else
+		battle_context.textbox = fs.dialogue("Not enough energy to use that move.")
+		battle.redraw_formspec(mt_player_name, player, enemy, battle_context)
+		minetest.after(3, function()
+			local new_fields = {battle = true}
+			battle_context.locked = false
+			battle.update(mt_player_name, new_fields, battle_context)
+		end)
+	end
+end
+
+-- Called when a player skips their turn
+function battle.fields_move_skip(mt_player_name, player, enemy, battle_context)
+	local player_move = "skip"
+	local enemy_move = computer.choose_move(mt_player_name, player, enemy)
+	enemy_move = move_stats[enemy_move] or enemy_move
+	battle.sequence(mt_player_name, player, enemy, battle_context, player_move, enemy_move)
+end
+
+-- Called when a player wants to switch monsters
+function battle.fields_monster(mt_player_name, player, enemy, fields, battle_context)
+	battle_context.locked = true
+	local player_new_monster = 1
+	for i = 1, 5 do
+		if fields["monster_"..i] then
+			player_new_monster = i
+		end
+	end
+	if battle_context.player_monsters["monster_"..player_new_monster].health > 0 then
+		local player_move = player_new_monster
+		local enemy_move = computer.choose_move(mt_player_name, player, enemy)
+		enemy_move = move_stats[enemy_move] or enemy_move
+		battle.sequence(mt_player_name, player, enemy, battle_context, player_move, enemy_move)
+	else
+		battle_context.textbox = fs.dialogue("Monster is too tired to battle.")
+		battle.redraw_formspec(mt_player_name, player, enemy, battle_context)
+		minetest.after(3, function()
+			local new_fields = {party = true}
+			battle_context.locked = false
+			battle.update(mt_player_name, new_fields, battle_context)
+		end)
+	end
+end
+
+-- Displays the main menu
+function battle.fields_main_menu(battle_context)
+	battle_context.menu = fs.image_button(0, 5, 1.5, 1, 1, "battle", "Battle")..
+	fs.image_button(1.5, 5, 1.51, 1, 1, "party", "Party")..
+	fs.image_button(3, 5, 1.5, 1, 1, "items", "Items")..
+	fs.image_button(4.5, 5, 1.51, 1, 1, "move_skip", "Skip")
 end
 
 -- Battle sequence after both the player and enemy have chosen a move
