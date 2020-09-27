@@ -191,7 +191,7 @@ function battle.fields_monster(mt_player_name, player, enemy, fields, battle_con
 		end
 	end
 	if battle_context.player_monsters["monster_"..player_new_monster].health > 0 then
-		local player_move = player_new_monster
+		local player_move = {type = "monster", new_monster = player_new_monster}
 		local enemy_move = computer.choose_move(mt_player_name, player, enemy)
 		enemy_move = move_stats[enemy_move] or enemy_move
 		battle.sequence(mt_player_name, player, enemy, battle_context, player_move, enemy_move)
@@ -291,8 +291,8 @@ function battle.sequence(mt_player_name, player, enemy, battle_context, player_m
 	if attacker[2].type == "skip" then
 		battle_context.textbox = fs.dialogue(attacker[3]..attacker[1].name.." used Skip.")
 		battle.redraw_formspec(mt_player_name, player, enemy, battle_context)
-	elseif type(attacker[2]) == "number" then
-		battle_context[attacker[4].."_current_monster"] = attacker[2]
+	elseif attacker[2].type == "monster" then
+		battle_context[attacker[4].."_current_monster"] = attacker[2].new_monster
 		if attacker[4] == "player" then
 			player = battle_context.player_monsters["monster_"..battle_context.player_current_monster]
 			attacker[1] = player
@@ -311,8 +311,8 @@ function battle.sequence(mt_player_name, player, enemy, battle_context, player_m
 			if defender[2].type == "skip" then
 				battle_context.textbox = fs.dialogue(defender[3]..defender[1].name.." used Skip.")
 				battle.redraw_formspec(mt_player_name, player, enemy, battle_context)
-			elseif type(defender[2]) == "number" then
-				battle_context[defender[4].."_current_monster"] = defender[2]
+			elseif defender[2].type == "monster" then
+				battle_context[defender[4].."_current_monster"] = defender[2].new_monster
 				if defender[4] == "player" then
 					player = battle_context.player_monsters["monster_"..battle_context.player_current_monster]
 					defender[1] = player
