@@ -61,6 +61,7 @@ function battle.initialize(mt_player_name, enemy_type, enemy_monsters)
 	battle_context.enemy_monsters = enemy_monsters
 	battle_context.player_monsters = {}
 	battle_context.locked = false
+	battle_context.fields_whitelist = nil
 	
 	-- Generate battle session id to track when player leaves battle
 	local SRNG = SecureRandom()
@@ -98,6 +99,15 @@ function battle.update(mt_player_name, fields, battle_context)
 	local enemy = battle_context.enemy_monsters["monster_"..battle_context.enemy_current_monster]
 	battle_context.menu, battle_context.animation, battle_context.textbox = "", "", ""
 	fields = fields or {}
+	
+	-- This allows limiting what fields can be sent via a whitelist
+	if battle_context.fields_whitelist and next(fields) ~= nil then
+		for i, v in pairs (fields) do
+			if not battle_context.fields_whitelist[i] then
+				fields[i] = nil
+			end
+		end
+	end
 	
 	-- Play button press if fields isn't empty
 	if next(fields) ~= nil then
@@ -138,8 +148,11 @@ end
 -- Shows the party menu where the player can select a monster
 function battle.fields_party(battle_context)
 	battle_context.menu = battle_context.menu..
-		fs.image(0, 0, 6, 6, "zoonami_battle_party_background.png")..
-		fs.image_button(4.5, 5.5, 1.5, 0.5, 2, "main_menu", "Back")
+		fs.image(0, 0, 6, 6, "zoonami_battle_party_background.png")
+	if not battle_context.fields_whitelist then
+		battle_context.menu = battle_context.menu..
+			fs.image_button(4.5, 5.5, 1.5, 0.5, 2, "main_menu", "Back")
+	end
 	for i = 1, 5 do
 		if battle_context.player_monsters["monster_"..i] then
 			local monster = battle_context.player_monsters["monster_"..i]
@@ -194,9 +207,19 @@ function battle.fields_monster(mt_player_name, player, enemy, fields, battle_con
 		local player_move = {type = "monster", new_monster = player_new_monster}
 		local enemy_move = computer.choose_move(mt_player_name, player, enemy)
 		enemy_move = move_stats[enemy_move] or enemy_move
-		battle.sequence(mt_player_name, player, enemy, battle_context, player_move, enemy_move)
+		if battle_context.fields_whitelist then
+			battle_context.fields_whitelist = nil
+			battle_context.player_current_monster = player_new_monster
+			player = battle_context.player_monsters["monster_"..player_new_monster]
+			local new_fields = {main_menu = true}
+			battle_context.locked = false
+			battle.update(mt_player_name, new_fields, battle_context)
+		else
+			battle.sequence(mt_player_name, player, enemy, battle_context, player_move, enemy_move)
+		end
 	else
-		battle_context.textbox = fs.dialogue("Monster is too tired to battle.")
+		battle_context.textbox = fs.dialogue("That monster is too tired to battle.")
+		battle.fields_party(battle_context)
 		battle.redraw_formspec(mt_player_name, player, enemy, battle_context)
 		minetest.after(3, function()
 			local new_fields = {party = true}
@@ -263,8 +286,13 @@ function battle.sequence(mt_player_name, player, enemy, battle_context, player_m
 			end
 		end
 		if another_monster then
-			-- Choose monster
-			battle_context.textbox = fs.dialogue("Switching monsters after fainting isn't made yet. Press ESC to leave.")
+			battle_context.fields_whitelist = {party = true, monster_1 = true, monster_2 = true, monster_3 = true, monster_4 = true, monster_5 = true}
+			battle_context.textbox = fs.dialogue(dead.monster.name.." is too weak to battle.")
+			minetest.after(3, function()
+				local new_fields = {party = true}
+				battle_context.locked = false
+				battle.update(mt_player_name, new_fields, battle_context)
+			end)
 		else
 			battle_context.textbox = fs.dialogue(dead.monster.name.." is too weak to battle.")
 			minetest.after(3, stop_battle)
