@@ -110,10 +110,8 @@ function battle.update(mt_player_name, fields, battle_context)
 		battle.fields_party(battle_context)
 	elseif fields.items then
 		battle.fields_items(mt_player_name, battle_context)
-	elseif fields.move_1 or fields.move_2 or fields.move_3 or fields.move_4 then
+	elseif fields.move_1 or fields.move_2 or fields.move_3 or fields.move_4 or fields.move_skip then
 		battle.fields_move(mt_player_name, player, enemy, fields, battle_context)
-	elseif fields.move_skip then
-		battle.fields_move_skip(mt_player_name, player, enemy, battle_context)
 	elseif fields.monster_1 or fields.monster_2 or fields.monster_3 or fields.monster_4 or fields.monster_5 then
 		battle.fields_monster(mt_player_name, player, enemy, fields, battle_context)
 	else
@@ -158,10 +156,10 @@ function battle.fields_items(mt_player_name, battle_context)
 	minetest.after(3, battle.update, mt_player_name, false, battle_context)
 end
 
--- Called when a player selects a move and checks if it can be used
+-- Called when a player selects a move or skips and checks if it can be used
 function battle.fields_move(mt_player_name, player, enemy, fields, battle_context)
 	battle_context.locked = true
-	local player_move_name = nil
+	local player_move_name = "skip"
 	for i = 1, 4 do
 		if fields["move_"..i] then
 			player_move_name = player.moves[i]
@@ -181,14 +179,6 @@ function battle.fields_move(mt_player_name, player, enemy, fields, battle_contex
 			battle.update(mt_player_name, new_fields, battle_context)
 		end)
 	end
-end
-
--- Called when a player skips their turn
-function battle.fields_move_skip(mt_player_name, player, enemy, battle_context)
-	local player_move = "skip"
-	local enemy_move = computer.choose_move(mt_player_name, player, enemy)
-	enemy_move = move_stats[enemy_move] or enemy_move
-	battle.sequence(mt_player_name, player, enemy, battle_context, player_move, enemy_move)
 end
 
 -- Called when a player wants to switch monsters
@@ -298,8 +288,8 @@ function battle.sequence(mt_player_name, player, enemy, battle_context, player_m
 	if enemy.agility > player.agility or enemy.agility == player.agility and math.random(2) == 1 then
 		attacker, defender = defender, attacker
 	end
-	if attacker[2] == "skip" then
-		battle_context.textbox = fs.dialogue(attacker[3]..attacker[1].name.." used skip.")
+	if attacker[2].type == "skip" then
+		battle_context.textbox = fs.dialogue(attacker[3]..attacker[1].name.." used Skip.")
 		battle.redraw_formspec(mt_player_name, player, enemy, battle_context)
 	elseif type(attacker[2]) == "number" then
 		battle_context[attacker[4].."_current_monster"] = attacker[2]
@@ -318,8 +308,8 @@ function battle.sequence(mt_player_name, player, enemy, battle_context, player_m
 	if player.health > 0 and enemy.health > 0 then
 		minetest.after(3, function()
 			battle_context.animation = ""
-			if defender[2] == "skip" then
-				battle_context.textbox = fs.dialogue(defender[3]..defender[1].name.." used skip.")
+			if defender[2].type == "skip" then
+				battle_context.textbox = fs.dialogue(defender[3]..defender[1].name.." used Skip.")
 				battle.redraw_formspec(mt_player_name, player, enemy, battle_context)
 			elseif type(defender[2]) == "number" then
 				battle_context[defender[4].."_current_monster"] = defender[2]
