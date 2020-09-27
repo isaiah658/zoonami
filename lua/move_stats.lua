@@ -2,6 +2,17 @@
 
 local move_stats = {}
 
+move_stats.skip = {
+	name = "Skip",
+	asset_name = "skip",
+	type = "skip",
+	power = 0,
+	energy = 0,
+	animation_frames = 0,
+	frame_length = 0,
+	sound = ""
+}
+
 move_stats.jab = {
 	name = "Jab",
 	asset_name = "jab",
