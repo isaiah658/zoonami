@@ -37,14 +37,11 @@ end
 
 -- Callback from fsc mod
 function battle.fsc_callback(mt_player_obj, fields, battle_context)
+	local mt_player_name = mt_player_obj:get_player_name()
 	if fields.quit then
-		local meta = mt_player_obj:get_meta()
-		minetest.sound_stop(tonumber(meta:get_string("zoonami_music_handler")))
-		meta:set_string("zoonami_music_handler", "false")
-		meta:set_string("zoonami_battle_session_id", 0)
+		battle.stop(mt_player_name, battle_context)
 		return true
 	else
-		local mt_player_name = mt_player_obj:get_player_name()
 		return battle.update(mt_player_name, fields, battle_context)
 	end
 end
@@ -237,6 +234,24 @@ function battle.fields_main_menu(battle_context)
 	fs.image_button(4.5, 5, 1.51, 1, 1, "move_skip", "Skip")
 end
 
+-- Ends the battle and saves the monster stats
+function battle.stop(mt_player_name, battle_context)
+	local mt_player_obj = battle.player_check(mt_player_name, battle_context, false)
+	if not mt_player_obj then return end
+	local meta = mt_player_obj:get_meta()
+	for i = 1, 5 do
+		local monster = battle_context.player_monsters["monster_"..i]
+		if monster then
+			monster.energy = monster.max_energy
+			meta:set_string("zoonami_monster_"..i, minetest.serialize(monster))
+		end
+	end
+	minetest.sound_stop(tonumber(meta:get_string("zoonami_music_handler")))
+	meta:set_string("zoonami_battle_session_id", 0)
+	-- Ideally I need to rework my code to return true to the fsc mod to close the formspec; this is temporary
+	minetest.close_formspec(mt_player_name, "")
+end
+
 -- Battle sequence after both the player and enemy have chosen a move
 function battle.sequence(mt_player_name, player, enemy, battle_context, player_move, enemy_move)
 	local function attack(attacker, defender, move, prefix, animation_name, damage_pos_x, damage_pos_y)
@@ -253,17 +268,6 @@ function battle.sequence(mt_player_name, player, enemy, battle_context, player_m
 		minetest.sound_play(move.sound, {to_player = mt_player_name, gain = 1})
 		battle_context.textbox = fs.dialogue(prefix..attacker.name.." used "..move.name..".")
 		battle.redraw_formspec(mt_player_name, player, enemy, battle_context)
-	end
-	
-	local function stop_battle()
-		local mt_player_obj = battle.player_check(mt_player_name, battle_context, false)
-		if not mt_player_obj then return end
-		local meta = mt_player_obj:get_meta()
-		player.energy = player.max_energy
-		meta:set_string("zoonami_monster_"..battle_context.player_current_monster, minetest.serialize(player))
-		minetest.sound_stop(meta:get_string("zoonami_music_handler"))
-		-- Ideally I need to rework my code to return true to the fsc mod to close the formspec; this is temporary
-		minetest.close_formspec(mt_player_name, "")
 	end
 	
 	local function death()
@@ -295,7 +299,7 @@ function battle.sequence(mt_player_name, player, enemy, battle_context, player_m
 			end)
 		else
 			battle_context.textbox = fs.dialogue(dead.monster.name.." is too weak to battle.")
-			minetest.after(3, stop_battle)
+			minetest.after(3, battle.stop, mt_player_name, battle_context)
 		end
 		battle.redraw_formspec(mt_player_name, player, enemy, battle_context)
 	end
