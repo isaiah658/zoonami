@@ -6,6 +6,7 @@ local monster_stats = dofile(minetest.get_modpath("zoonami") .. "/lua/monster_st
 local move_stats = dofile(minetest.get_modpath("zoonami") .. "/lua/move_stats.lua")
 local computer = dofile(minetest.get_modpath("zoonami") .. "/lua/computer.lua")
 local fs = dofile(minetest.get_modpath("zoonami") .. "/lua/formspec.lua")
+local biome = dofile(minetest.get_modpath("zoonami") .. "/lua/biome.lua")
 
 -- Prevents crashes if player leaves during battle and prevents malicious input
 function battle.player_check(mt_player_name, battle_context, check_context_lock)
@@ -59,6 +60,7 @@ function battle.initialize(mt_player_name, enemy_type, enemy_monsters)
 	battle_context.player_monsters = {}
 	battle_context.locked = false
 	battle_context.fields_whitelist = nil
+	battle_context.biome_background = biome.background(mt_player_obj)
 	
 	-- Generate battle session id to track when player leaves battle
 	local SRNG = SecureRandom()
@@ -370,7 +372,7 @@ function battle.redraw_formspec(mt_player_name, player, enemy, battle_context)
 	if not mt_player_obj then return end
 	local formspec = 
         fs.header(6, 6)..
-		fs.background(0, 0, 6, 6, "zoonami_battle_background.png")..
+		fs.background(0, 0, 6, 6, battle_context.biome_background)..
 		fs.style_type_fonts("button,image_button,tooltip,label", "mono,bold", 16, "#000000")..
 		fs.style_type_fonts("textarea", "mono,bold", 15, "#000000")..
 		fs.label(0.1, 0.3, enemy.name)..
