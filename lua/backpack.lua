@@ -7,21 +7,21 @@ function backpack.fields_items(mt_player_obj)
 	local inv = mt_player_obj:get_inventory()
 	inv:set_size("zoonami_backpack_items", 12)
 	return fs.list("current_player", "zoonami_backpack_items", 1, 2.2, 6, 2)..
-		fs.header_backpack("player_stats", "monsters", "Items")..
+		fs.backpack_header("player_stats", "monsters", "Items")..
 		fs.listring("current_player", "main")..
 		fs.listring("current_player", "zoonami_backpack_items")
 end
 
 function backpack.fields_monsters(mt_player_obj)
-	return fs.header_backpack("items", "settings", "Monsters")
+	return fs.backpack_header("items", "settings", "Monsters")
 end
 
 function backpack.fields_settings(mt_player_obj)
-	return fs.header_backpack("monsters", "player_stats", "Settings")
+	return fs.backpack_header("monsters", "player_stats", "Settings")
 end
 
 function backpack.fields_player_stats(mt_player_obj)
-	return fs.header_backpack("settings", "items", "Player Stats")
+	return fs.backpack_header("settings", "items", "Player Stats")
 end
 
 function backpack.receive_fields(mt_player_obj, fields)
