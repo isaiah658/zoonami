@@ -7,8 +7,11 @@ minetest.register_craftitem("zoonami:backpack", {
 	description = "Backpack",
 	inventory_image = "zoonami_backpack.png",
 	stack_max = 1,
-	on_use = function(itemstack, user, pointed_thing)
+	on_secondary_use = function (itemstack, user, pointed_thing)
 		backpack.show_formspec(user)
+	end,
+	on_place = function(itemstack, placer, pointed_thing)
+		backpack.show_formspec(placer)
 	end,
 })
 
