@@ -59,6 +59,10 @@ function fs.label(x, y, text)
 	return "label["..fs.zoom(x)..","..fs.zoom(y)..";"..text.."]"
 end
 
+function fs.list(inventory_location, list_name, x, y, width, height)
+	return "list["..inventory_location..";"..list_name..";"..x..","..y..";"..width..","..height..";]"
+end
+
 function fs.listring(inventory_location, list_name)
 	return "listring["..inventory_location..";"..list_name.."]"
 end
