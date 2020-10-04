@@ -9,6 +9,9 @@ License of Media:
 -----------------
 Monster RPG 2 (https://opengameart.org/content/42-monster-rpg-2-music-tracks) (CC0)
 	sounds/zoonami_battle.ogg (Edited to seemlessly loop by isaiah658)
+	
+GameAudio - UI SFX (https://freesound.org/people/GameAudio/sounds/220206/) (CC0)
+	sounds/zoonami_select2.ogg
 
 isaiah658 (CC0)
 	All sounds and textures not listed above were created by isaiah658 and are licensed as CC0.
