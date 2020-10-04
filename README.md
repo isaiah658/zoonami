@@ -1,7 +1,7 @@
 # Zoonami
 A mod for Minetest that allows you to collect and train monsters that can be used in battles.
 
-Version 0.2.0
+Version 0.3.0
 
 ## Warning
 This mod is incomplete, has bugs, and can cause server crashes. Only use it for testing 
