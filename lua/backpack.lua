@@ -6,7 +6,7 @@ local fs = dofile(minetest.get_modpath("zoonami") .. "/lua/formspec.lua")
 function backpack.fields_items(mt_player_obj)
 	local inv = mt_player_obj:get_inventory()
 	inv:set_size("zoonami_backpack_items", 12)
-	return fs.list("current_player", "zoonami_backpack_items", 1, 2.2, 6, 2)..
+	return fs.list("current_player", "zoonami_backpack_items", 1, 2.2, 6, 2, 0)..
 		fs.backpack_header("player_stats", "monsters", "Items")..
 		fs.listring("current_player", "main")..
 		fs.listring("current_player", "zoonami_backpack_items")
@@ -47,8 +47,8 @@ function backpack.show_formspec(mt_player_obj)
 	end
 	local formspec = "formspec_version[1]"..
 		"size[8,9.1]"..
-		fs.list("current_player", "main", 0, 5.2, 8, 1)..
-		fs.list("current_player", "main", 0, 6.35, 3, 8)..
+		fs.list("current_player", "main", 0, 5.2, 8, 1, 0)..
+		fs.list("current_player", "main", 0, 6.35, 8, 3, 8)..
 		backpack["fields_"..page](mt_player_obj)
 	minetest.show_formspec(mt_player_name, "zoonami:backpack", formspec)
 end
