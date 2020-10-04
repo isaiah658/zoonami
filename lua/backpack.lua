@@ -17,11 +17,30 @@ function backpack.fields_monsters(mt_player_obj)
 end
 
 function backpack.fields_settings(mt_player_obj)
-	return fs.backpack_header("monsters", "player_stats", "Settings")
+	local meta = mt_player_obj:get_meta()
+	local zoonami_gui_zoom = meta:get_float("zoonami_gui_zoom")
+	return fs.backpack_header("monsters", "player_stats", "Settings")..
+		fs.image_button(6.75, 1.7, 0.87, 0.59, "zoonami_menu_button4", "battle_gui_zoom_decrease", "-")..
+		fs.image_button(7.75, 1.7, 0.87, 0.59, "zoonami_menu_button4", "battle_gui_zoom_increase", "+")..
+		fs.label(1.75, 2, "Battle GUI Size: "..zoonami_gui_zoom)
 end
 
 function backpack.fields_player_stats(mt_player_obj)
 	return fs.backpack_header("settings", "items", "Player Stats")
+end
+
+function backpack.fields_battle_gui_zoom_increase(mt_player_obj)
+	local meta = mt_player_obj:get_meta()
+	local zoonami_gui_zoom = meta:get_float("zoonami_gui_zoom")
+	zoonami_gui_zoom = math.min(zoonami_gui_zoom + 0.5, 3)
+	meta:set_float("zoonami_gui_zoom", zoonami_gui_zoom)
+end
+
+function backpack.fields_battle_gui_zoom_decrease(mt_player_obj)
+	local meta = mt_player_obj:get_meta()
+	local zoonami_gui_zoom = meta:get_float("zoonami_gui_zoom")
+	zoonami_gui_zoom = math.max(zoonami_gui_zoom - 0.5, 1)
+	meta:set_float("zoonami_gui_zoom", zoonami_gui_zoom)
 end
 
 function backpack.receive_fields(mt_player_obj, fields)
@@ -37,6 +56,10 @@ function backpack.receive_fields(mt_player_obj, fields)
 		meta:set_string("zoonami_backpack_page", "settings")
 	elseif fields.player_stats then
 		meta:set_string("zoonami_backpack_page", "player_stats")
+	elseif fields.battle_gui_zoom_increase then
+		backpack.fields_battle_gui_zoom_increase(mt_player_obj)
+	elseif fields.battle_gui_zoom_decrease then
+		backpack.fields_battle_gui_zoom_decrease(mt_player_obj)
 	end
 end
 
