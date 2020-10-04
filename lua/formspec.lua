@@ -30,9 +30,9 @@ function fs.backpack_header(left_page, right_page, label)
 		"bgcolor[#00000000]"..
 		fs.style_type_fonts("button,image_button,tooltip,label", "mono,bold", 16, "#000000")..
 		fs.background(0.25, 0.25, 10, 5.785, "zoonami_backpack_background.png")..
-		fs.image_button_arrow(2.56, 0.7, 0.87, 0.59, 1, "left", left_page, "")..
-		fs.image_button_arrow(7.11, 0.7, 0.87, 0.59, 1, "right", right_page, "")..
-		fs.image_button_label(3.56, 0.7, 3.42, 0.59, 1, "label", label)..
+		fs.arrow_image_button(2.56, 0.7, 0.87, 0.59, 1, "left", left_page, "")..
+		fs.arrow_image_button(7.11, 0.7, 0.87, 0.59, 1, "right", right_page, "")..
+		fs.image_button(3.56, 0.7, 3.42, 0.59, 1, "zoonami_label1", "label", label)..
 		fs.box(2.59, 0.3, 2.94, 0.64, "#00000000")
 end
 
