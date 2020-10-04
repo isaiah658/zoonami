@@ -36,12 +36,12 @@ function fs.image(x, y, width, height, file_name)
 	return "image["..fs.zoom(x)..","..fs.zoom(y)..";"..fs.zoom(width)..","..fs.zoom(height)..";"..file_name.."]"
 end
 
-function fs.image_button(x, y, width, height, button_type_id, field_name, text)
-	return "image_button["..fs.zoom(x)..","..fs.zoom(y)..";"..fs.zoom(width)..","..fs.zoom(height)..";zoonami_menu_button"..button_type_id..".png;"..field_name..";"..text..";false;false;zoonami_menu_button"..button_type_id.."_pressed.png]"
-end
-
 function fs.label(x, y, text)
 	return "label["..fs.zoom(x)..","..fs.zoom(y)..";"..text.."]"
+end
+
+function fs.menu_image_button(x, y, width, height, button_type_id, field_name, text)
+	return "image_button["..fs.zoom(x)..","..fs.zoom(y)..";"..fs.zoom(width)..","..fs.zoom(height)..";zoonami_menu_button"..button_type_id..".png;"..field_name..";"..text..";false;false;zoonami_menu_button"..button_type_id.."_pressed.png]"
 end
 
 function fs.style_type_fonts(elements, font_type, font_size, font_color)
