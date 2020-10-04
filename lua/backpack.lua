@@ -1,30 +1,90 @@
--- Manages everything involving the sfinv mod
+-- Manages everything involving the backpack formspec
+
+local backpack = {}
+local fs = dofile(minetest.get_modpath("zoonami") .. "/lua/formspec.lua")
+
+function backpack.fields_items(mt_player_obj)
+	local inv = mt_player_obj:get_inventory()
+	inv:set_size("zoonami_backpack_items", 12)
+	return fs.list("current_player", "zoonami_backpack_items", 1, 2.2, 6, 2)..
+		fs.header_backpack("player_stats", "monsters", "Items")..
+		fs.listring("current_player", "main")..
+		fs.listring("current_player", "zoonami_backpack_items")
+end
+
+function backpack.fields_monsters(mt_player_obj)
+	return fs.header_backpack("items", "settings", "Monsters")
+end
+
+function backpack.fields_settings(mt_player_obj)
+	return fs.header_backpack("monsters", "player_stats", "Settings")
+end
+
+function backpack.fields_player_stats(mt_player_obj)
+	return fs.header_backpack("settings", "items", "Player Stats")
+end
+
+function backpack.receive_fields(mt_player_obj, fields)
+	local meta = mt_player_obj:get_meta()
+	if fields.items then
+		meta:set_string("zoonami_backpack_page", "items")
+	elseif fields.monsters then
+		meta:set_string("zoonami_backpack_page", "monsters")
+	elseif fields.settings then
+		meta:set_string("zoonami_backpack_page", "settings")
+	elseif fields.player_stats then
+		meta:set_string("zoonami_backpack_page", "player_stats")
+	end
+end
+
+function backpack.show_formspec(mt_player_obj)
+	fs.player_zoom = 1
+	local mt_player_name = mt_player_obj:get_player_name()
+	local meta = mt_player_obj:get_meta()
+	local page = meta:get_string("zoonami_backpack_page")
+	if page == "" then
+		page = "items"
+	end
+	local formspec = "formspec_version[1]"..
+		"size[8,9.1]"..
+		fs.list("current_player", "main", 0, 5.2, 8, 1)..
+		fs.list("current_player", "main", 0, 6.35, 3, 8)..
+		backpack["fields_"..page](mt_player_obj)
+	minetest.show_formspec(mt_player_name, "zoonami:backpack", formspec)
+end
+
+minetest.register_on_player_receive_fields(function(mt_player_obj, formname, fields)
+	if formname == "zoonami:backpack" then
+		backpack.receive_fields(mt_player_obj, fields)
+		backpack.show_formspec(mt_player_obj)
+	end
+end)
+
+minetest.register_craftitem("zoonami:backpack", {
+	description = "Backpack",
+	inventory_image = "zoonami_backpack.png",
+	stack_max = 1,
+	on_use = function(itemstack, user, pointed_thing)
+		backpack.show_formspec(user)
+	end,
+})
 
 if minetest.get_modpath("sfinv") ~= nil then
-	sfinv.register_page("zoonami:settings", {
+	sfinv.register_page("zoonami:backpack", {
 		title = "Zoonami",
-		get = function(self, player, context)
-			local meta = player:get_meta()
-			local zoonami_gui_zoom = meta:get_float("zoonami_gui_zoom")
-			local formspec = 
-				"formspec_version[3]"..
-				"style_type[button,image_button,tooltip,label;font=mono,bold;font_size=16;textcolor=#ffffff]"..
-				"button[0,0;1,1;decrease;-]"..
-				"button[1,0;1,1;increase;+]"..
-				"label[2,0.2;Battle GUI Size: "..zoonami_gui_zoom.."]"
-			return sfinv.make_formspec(player, context, formspec, true)
-		end,
-		on_player_receive_fields = function(self, player, context, fields)
-			local meta = player:get_meta()
-			local zoonami_gui_zoom = meta:get_float("zoonami_gui_zoom")
-			if fields.increase then
-				zoonami_gui_zoom = math.min(zoonami_gui_zoom + 0.5, 3)
-				meta:set_float("zoonami_gui_zoom", zoonami_gui_zoom)
-			elseif fields.decrease then
-				zoonami_gui_zoom = math.max(zoonami_gui_zoom - 0.5, 1)
-				meta:set_float("zoonami_gui_zoom", zoonami_gui_zoom)
+		get = function(self, mt_player_obj, context)
+			fs.player_zoom = 1
+			local meta = mt_player_obj:get_meta()
+			local page = meta:get_string("zoonami_backpack_page")
+			if page == "" then
+				page = "items"
 			end
-			sfinv.set_page(player, "zoonami:settings")
+			local formspec = backpack["fields_"..page](mt_player_obj)
+			return sfinv.make_formspec(mt_player_obj, context, formspec, true)
+		end,
+		on_player_receive_fields = function(self, mt_player_obj, context, fields)
+			backpack.receive_fields(mt_player_obj, fields)
+			sfinv.set_page(mt_player_obj, "zoonami:backpack")
 		end,
 	})
 end
