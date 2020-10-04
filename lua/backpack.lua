@@ -26,6 +26,9 @@ end
 
 function backpack.receive_fields(mt_player_obj, fields)
 	local meta = mt_player_obj:get_meta()
+	if fields.items or fields.monsters or fields.settings or fields.player_stats then
+		minetest.sound_play("zoonami_select2", {to_player = mt_player_name, gain = 0.5})
+	end
 	if fields.items then
 		meta:set_string("zoonami_backpack_page", "items")
 	elseif fields.monsters then
