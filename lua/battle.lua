@@ -136,10 +136,10 @@ end
 -- Shows the battle menu where the player can select a move
 function battle.fields_battle(player, battle_context)
 	battle_context.menu = battle_context.menu..
-		fs.image_button(4.5, 4.5, 1.5, 0.5, 2, "main_menu", "Back")
+		fs.menu_image_button(4.5, 4.5, 1.5, 0.5, 2, "main_menu", "Back")
 	for i, v in ipairs (player.moves) do
 		battle_context.menu = battle_context.menu..
-			fs.image_button((i-1)*(1.5), 5, 1.5, 1, 1, "move_"..i, move_stats[v].name)..
+			fs.menu_image_button((i-1)*(1.5), 5, 1.5, 1, 1, "move_"..i, move_stats[v].name)..
 			fs.tooltip("move_"..i, "Attack: "..move_stats[v].power * (100).."%\nEnergy: "..move_stats[v].energy, "#ffffff", "#000000")
 	end
 end
@@ -150,14 +150,14 @@ function battle.fields_party(battle_context)
 		fs.image(0, 0, 6, 6, "zoonami_battle_party_background.png")
 	if not battle_context.fields_whitelist then
 		battle_context.menu = battle_context.menu..
-			fs.image_button(4.5, 5.5, 1.5, 0.5, 2, "main_menu", "Back")
+			fs.menu_image_button(4.5, 5.5, 1.5, 0.5, 2, "main_menu", "Back")
 	end
 	for i = 1, 5 do
 		if battle_context.player_monsters["monster_"..i] then
 			local monster = battle_context.player_monsters["monster_"..i]
 			battle_context.menu = battle_context.menu..
 				fs.box(0.25, 0.1+i-0.9, 0.7, 0.7, monster_stats[monster.asset_name].color)..
-				fs.image_button(0, 0.1+i-1, 6, 0.92, 3, "monster_"..i, monster.name.."\nH:"..monster.health.."/"..monster.max_health.."  E:"..monster.energy.."/"..monster.max_energy)
+				fs.menu_image_button(0, 0.1+i-1, 6, 0.92, 3, "monster_"..i, monster.name.."\nH:"..monster.health.."/"..monster.max_health.."  E:"..monster.energy.."/"..monster.max_energy)
 		end
 	end
 end
@@ -230,10 +230,10 @@ end
 
 -- Displays the main menu
 function battle.fields_main_menu(battle_context)
-	battle_context.menu = fs.image_button(0, 5, 1.5, 1, 1, "battle", "Battle")..
-	fs.image_button(1.5, 5, 1.51, 1, 1, "party", "Party")..
-	fs.image_button(3, 5, 1.5, 1, 1, "items", "Items")..
-	fs.image_button(4.5, 5, 1.51, 1, 1, "move_skip", "Skip")
+	battle_context.menu = fs.menu_image_button(0, 5, 1.5, 1, 1, "battle", "Battle")..
+	fs.menu_image_button(1.5, 5, 1.51, 1, 1, "party", "Party")..
+	fs.menu_image_button(3, 5, 1.5, 1, 1, "items", "Items")..
+	fs.menu_image_button(4.5, 5, 1.51, 1, 1, "move_skip", "Skip")
 end
 
 -- Ends the battle and saves the monster stats
