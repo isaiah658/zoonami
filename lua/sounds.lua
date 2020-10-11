@@ -3,9 +3,9 @@
 local sounds = {}
 
 -- Snappy
-function sounds.node_sound_snappy(sound_table)
+function sounds.node_sound_leaves(sound_table)
 	if minetest.get_modpath("default") ~= nil then
-		sound_table = default.node_sound_snappy()
+		sound_table = default.node_sound_leaves_defaults()
 	else
 		sound_table = sound_table or {}
 	end
