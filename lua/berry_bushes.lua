@@ -8,7 +8,7 @@ function zoonami.register_berry_bush(def)
 		drawtype = "plantlike",
 		visual_scale = 1,
 		waving = 1,
-		tiles = {"zoonami_"..def.name.."_bush_2.png"},
+		tiles = {"zoonami_"..def.name.."_bush_1.png"},
 		inventory_image = "zoonami_"..def.name.."_bush_2.png",
 		wield_image = "zoonami_"..def.name.."_bush_2.png",
 		paramtype = "light",
@@ -40,7 +40,11 @@ function zoonami.register_berry_bush(def)
 			type = "fixed",
 			fixed = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
 		},
-		drops = {"zoonami:"..def.name, "zoonami:"..def.name.."_bush_1"},
+		drop = {
+			items = {
+				{items = {"zoonami:"..def.name, "zoonami:"..def.name.."_bush_1"}}
+			}
+		},
 		on_rightclick = function(pos, node, player, itemstack, pointed_thing)
 			local newnode = ("zoonami:"..def.name.."_bush_1")
 			minetest.swap_node(pos, {name = newnode})
