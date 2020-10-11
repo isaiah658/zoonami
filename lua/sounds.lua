@@ -17,3 +17,5 @@ function sounds.node_sound_snappy(sound_table)
 			{name = "zoonami_node_place", gain = 1.0}
 	return sound_table
 end
+
+return sounds
