@@ -16,7 +16,7 @@ function zoonami.register_berry_bush(def)
 		walkable = false,
 		buildable_to = true,
 		groups = {snappy = 3, flammable = 3, flora = 1, attached_node = 1, zoonami_berry_bush = 1},
-		sounds = sounds.node_sound_snappy(),
+		sounds = sounds.node_sound_leaves(),
 		selection_box = {
 			type = "fixed",
 			fixed = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
@@ -35,7 +35,7 @@ function zoonami.register_berry_bush(def)
 		walkable = false,
 		buildable_to = true,
 		groups = {snappy = 3, flammable = 3, flora = 1, attached_node = 1, not_in_creative_inventory = 1},
-		sounds = sounds.node_sound_snappy(),
+		sounds = sounds.node_sound_leaves(),
 		selection_box = {
 			type = "fixed",
 			fixed = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
