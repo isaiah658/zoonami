@@ -71,6 +71,14 @@ function fs.menu_image_button(x, y, width, height, button_type_id, field_name, t
 	return "image_button["..fs.zoom(x)..","..fs.zoom(y)..";"..fs.zoom(width)..","..fs.zoom(height)..";zoonami_menu_button"..button_type_id..".png;"..field_name..";"..text..";false;false;zoonami_menu_button"..button_type_id.."_pressed.png]"
 end
 
+function fs.scrollbar(x, y, width, height, orientation, field_name, value)
+	return "scrollbar["..fs.zoom(x)..","..fs.zoom(y)..";"..fs.zoom(width)..","..fs.zoom(height)..";"..orientation..";"..field_name..";"..fs.zoom(value).."]"
+end
+
+function fs.scroll_container(x, y, width, height, field_name, orientation, scroll_factor)
+	return "scroll_container["..fs.zoom(x)..","..fs.zoom(y)..";"..fs.zoom(width)..","..fs.zoom(height)..";"..field_name..";"..orientation..";"..fs.zoom(scroll_factor).."]"
+end
+
 function fs.style_type_fonts(elements, font_type, font_size, font_color)
 	return "style_type["..elements..";font="..font_type..";font_size="..fs.zoom(font_size)..";textcolor="..font_color.."]"
 end
