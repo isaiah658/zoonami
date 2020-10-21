@@ -4,6 +4,7 @@
 local battle = {}
 local monster_stats = dofile(minetest.get_modpath("zoonami") .. "/lua/monster_stats.lua")
 local move_stats = dofile(minetest.get_modpath("zoonami") .. "/lua/move_stats.lua")
+local item_stats = dofile(minetest.get_modpath("zoonami") .. "/lua/item_stats.lua")
 local computer = dofile(minetest.get_modpath("zoonami") .. "/lua/computer.lua")
 local fs = dofile(minetest.get_modpath("zoonami") .. "/lua/formspec.lua")
 local biome = dofile(minetest.get_modpath("zoonami") .. "/lua/biome.lua")
@@ -119,6 +120,8 @@ function battle.update(mt_player_name, fields, battle_context)
 		battle.fields_party(battle_context)
 	elseif fields.items then
 		battle.fields_items(mt_player_name, battle_context)
+	elseif fields.item_1 or fields.item_2 or fields.item_3 or fields.item_4 or fields.item_5 or fields.item_6 or fields.item_7 or fields.item_8 or fields.item_9 or fields.item_10 or fields.item_11 or fields.item_12 then
+		battle.fields_item(mt_player_name, player, enemy, fields, battle_context)
 	elseif fields.move_1 or fields.move_2 or fields.move_3 or fields.move_4 or fields.move_skip then
 		battle.fields_move(mt_player_name, player, enemy, fields, battle_context)
 	elseif fields.monster_1 or fields.monster_2 or fields.monster_3 or fields.monster_4 or fields.monster_5 then
@@ -164,15 +167,58 @@ end
 
 -- Shows the items menu where the player can select an item
 function battle.fields_items(mt_player_name, battle_context)
-	battle_context.textbox = fs.dialogue("This feature is not implemented yet.")
-	minetest.after(3, battle.update, mt_player_name, false, battle_context)
+	local mt_player_obj = battle.player_check(mt_player_name, battle_context, true)
+	if not mt_player_obj then return end
+	local inv = mt_player_obj:get_inventory()
+	local menu_slot_number = 0
+	battle_context.menu = fs.image(0, 0, 6, 6, "zoonami_battle_party_background.png")..
+		fs.scroll_container(0, 0.1, 6, 5, "items_scroll_container", "vertical", "0.1")
+	for i = 1, 12 do
+		local stack = inv:get_stack("zoonami_backpack_items", i)
+		local stack_name = stack:get_name()
+		stack_name = stack_name:gsub("zoonami:", "")
+		if item_stats[stack_name] then
+			battle_context.menu = battle_context.menu..
+			fs.box(0.25, 0.2 + menu_slot_number, 0.7, 0.7, item_stats[stack_name].color)..
+			fs.menu_image_button(0, 0.1 + menu_slot_number, 6, 0.92, 3, "item_"..i, item_stats[stack_name].name.."  x"..stack:get_count())
+			menu_slot_number = menu_slot_number + 1
+		end
+	end
+	battle_context.menu = battle_context.menu..
+		"scroll_container_end[]"..
+		"scrollbaroptions[min=0;max=50]"..
+		fs.scrollbar(5.75, 0, 0.25, 5, "vertical", "items_scroll_container", "0")..
+		fs.menu_image_button(4.5, 5.5, 1.5, 0.5, 2, "main_menu", "Back")
+end
+
+-- Called when a player selects an item
+function battle.fields_item(mt_player_name, player, enemy, fields, battle_context)
+	local mt_player_obj = battle.player_check(mt_player_name, battle_context, true)
+	if not mt_player_obj then return end
+	battle_context.locked = true
+	local inv = mt_player_obj:get_inventory()
+	local player_item_index = nil
+	for i = 1, 4 do
+		if fields["item_"..i] then
+			player_item_index = i
+		end
+	end
+	local stack = inv:get_stack("zoonami_backpack_items", player_item_index)
+	local stack_name = stack:get_name()
+	stack_name = stack_name:gsub("zoonami:", "")
+	if item_stats[stack_name] then
+		local player_move = item_stats[stack_name]
+		local enemy_move = computer.choose_move(mt_player_name, player, enemy)
+		enemy_move = move_stats[enemy_move] or enemy_move
+		battle.sequence(mt_player_name, player, enemy, battle_context, player_move, enemy_move)
+	end
 end
 
 -- Called when a player selects a move or skips and checks if it can be used
 function battle.fields_move(mt_player_name, player, enemy, fields, battle_context)
 	battle_context.locked = true
 	local player_move_name = "skip"
-	for i = 1, 4 do
+	for i = 1, 12 do
 		if fields["move_"..i] then
 			player_move_name = player.moves[i]
 		end
@@ -325,6 +371,12 @@ function battle.sequence(mt_player_name, player, enemy, battle_context, player_m
 	if attacker[2].type == "skip" then
 		battle_context.textbox = fs.dialogue(attacker[3]..attacker[1].name.." used Skip.")
 		battle.redraw_formspec(mt_player_name, player, enemy, battle_context)
+	elseif attacker[2].type == "healing" then
+		battle_context.textbox = fs.dialogue(attacker[3]..attacker[1].name.." used "..attacker[2].name..".")
+		battle_context.animation = fs.style_type_fonts("label", "mono,bold", 28, "#0D720D")..
+			fs.label(defender[5], defender[6], "+"..attacker[2].amount)
+		attacker[1].health = math.min(attacker[1].health + attacker[2].amount, attacker[1].max_health)
+		battle.redraw_formspec(mt_player_name, player, enemy, battle_context)
 	elseif attacker[2].type == "monster" then
 		battle_context[attacker[4].."_current_monster"] = attacker[2].new_monster
 		if attacker[4] == "player" then
@@ -344,6 +396,12 @@ function battle.sequence(mt_player_name, player, enemy, battle_context, player_m
 			battle_context.animation = ""
 			if defender[2].type == "skip" then
 				battle_context.textbox = fs.dialogue(defender[3]..defender[1].name.." used Skip.")
+				battle.redraw_formspec(mt_player_name, player, enemy, battle_context)
+			elseif defender[2].type == "healing" then
+				battle_context.textbox = fs.dialogue(defender[3]..defender[1].name.." used "..defender[2].name..".")
+				battle_context.animation = fs.style_type_fonts("label", "mono,bold", 28, "#0D720D")..
+					fs.label(attacker[5], attacker[6], "+"..defender[2].amount)
+				defender[1].health = math.min(defender[1].health + defender[2].amount, defender[1].max_health)
 				battle.redraw_formspec(mt_player_name, player, enemy, battle_context)
 			elseif defender[2].type == "monster" then
 				battle_context[defender[4].."_current_monster"] = defender[2].new_monster
