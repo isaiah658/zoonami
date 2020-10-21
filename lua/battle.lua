@@ -198,7 +198,7 @@ function battle.fields_item(mt_player_name, player, enemy, fields, battle_contex
 	battle_context.locked = true
 	local inv = mt_player_obj:get_inventory()
 	local player_item_index = nil
-	for i = 1, 4 do
+	for i = 1, 12 do
 		if fields["item_"..i] then
 			player_item_index = i
 		end
@@ -372,6 +372,11 @@ function battle.sequence(mt_player_name, player, enemy, battle_context, player_m
 		battle_context.textbox = fs.dialogue(attacker[3]..attacker[1].name.." used Skip.")
 		battle.redraw_formspec(mt_player_name, player, enemy, battle_context)
 	elseif attacker[2].type == "healing" then
+		local mt_player_obj = battle.player_check(mt_player_name, battle_context, false)
+		if not mt_player_obj then return end
+		local stack = ItemStack("zoonami:"..attacker[2].asset_name.." 1")
+		local inv = mt_player_obj:get_inventory()
+		inv:remove_item("zoonami_backpack_items", stack)
 		battle_context.textbox = fs.dialogue(attacker[3]..attacker[1].name.." used "..attacker[2].name..".")
 		battle_context.animation = fs.style_type_fonts("label", "mono,bold", 28, "#0D720D")..
 			fs.label(defender[5], defender[6], "+"..attacker[2].amount)
@@ -398,6 +403,11 @@ function battle.sequence(mt_player_name, player, enemy, battle_context, player_m
 				battle_context.textbox = fs.dialogue(defender[3]..defender[1].name.." used Skip.")
 				battle.redraw_formspec(mt_player_name, player, enemy, battle_context)
 			elseif defender[2].type == "healing" then
+				local mt_player_obj = battle.player_check(mt_player_name, battle_context, false)
+				if not mt_player_obj then return end
+				local stack = ItemStack("zoonami:"..attacker[2].asset_name.." 1")
+				local inv = mt_player_obj:get_inventory()
+				inv:remove_item("zoonami_backpack_items", stack)
 				battle_context.textbox = fs.dialogue(defender[3]..defender[1].name.." used "..defender[2].name..".")
 				battle_context.animation = fs.style_type_fonts("label", "mono,bold", 28, "#0D720D")..
 					fs.label(attacker[5], attacker[6], "+"..defender[2].amount)
